@@ -3,9 +3,9 @@ var context;
 var size;
 
 var hands = [
-    { radius: .90, width: .01, tension: 1.5, dampening: 0.8 },
-    { radius: .95, width: .03, tension: 0.5, dampening: 0.98 },
-    { radius: .60, width: .08, tension: 0.2, dampening: 0.998 }
+    { radius: .95, width: .01, tension: 1.5, dampening: 0.8 },
+    { radius: .98, width: .03, tension: 0.5, dampening: 0.98 },
+    { radius: .65, width: .08, tension: 0.2, dampening: 0.998 }
 ];
 
 function modulo2PI(x) {
