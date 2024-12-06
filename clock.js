@@ -1,5 +1,6 @@
 var canvas;
 var context;
+var size;
 
 var hands = [
     { radius: .90, width: .01, tension: 1.5, dampening: 0.8 },
@@ -13,12 +14,12 @@ function modulo2PI(x) {
 
 function drawHand(hand) {
     context.strokeStyle = "black";
-    context.lineWidth = hand.width;
+    context.lineWidth = size * hand.width;
     context.lineCap = "round";
     context.beginPath();
     context.moveTo(canvas.width/2, canvas.height/2);
-    context.lineTo(canvas.width/2 + hand.radius * Math.cos(hand.angle),
-                   canvas.height/2 - hand.radius * Math.sin(hand.angle));
+    context.lineTo(canvas.width/2 + size * hand.radius * Math.cos(hand.angle),
+                   canvas.height/2 - size * hand.radius * Math.sin(hand.angle));
     context.stroke();
 }
 
@@ -35,6 +36,10 @@ function updateHand(hand) {
 }
 
 function update() {
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
+    size = Math.min(canvas.width, canvas.height) / 2;
+
     drawWindow();
     for (i = 0; i < hands.length; i++) {
         updateHand(hands[i]);
@@ -56,15 +61,10 @@ window.onload = function() {
     document.body.style = "margin:0; padding:0;";
     canvas = document.getElementById("clock");
     canvas.style.filter = "blur(1px)";
-    canvas.width = document.documentElement.clientWidth;
-    canvas.height = document.documentElement.clientHeight;
     if (canvas.getContext)
         context = canvas.getContext("2d");
 
-    let size = Math.min(canvas.width, canvas.height) / 2;
     for (i = 0; i < hands.length; i++) {
-        hands[i].radius *= size;
-        hands[i].width *= size;
         hands[i].velocity = 0;
     }
 
