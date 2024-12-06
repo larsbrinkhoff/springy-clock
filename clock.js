@@ -3,10 +3,12 @@ var context;
 var size;
 
 var hands = [
-    { radius: .95, width: .01, tension: 1.5, dampening: 0.8 },
-    { radius: .98, width: .03, tension: 0.5, dampening: 0.98 },
-    { radius: .65, width: .08, tension: 0.2, dampening: 0.998 }
+    { mass: 0.03, radius: .85, width: .01, tension: 1.5, dampening: 0.8 },
+    { mass: 0.07, radius: .80, width: .03, tension: 0.5, dampening: 0.98 },
+    { mass: 0.20, radius: .60, width: .08, tension: 0.2, dampening: 0.998 }
 ];
+
+var numbers;
 
 function modulo2PI(x) {
     return (x + Math.PI) % (2*Math.PI) - Math.PI;
@@ -35,6 +37,48 @@ function updateHand(hand) {
     hand.angle += 0.7 * hand.velocity;
 }
 
+function updateNumber(number) {
+    number.posx = number.centerx;
+    number.posy = number.centery;
+
+    hand = hands[0];
+    handx = 0.5 * hand.radius * Math.cos(hand.angle);
+    handy = 0.5 * hand.radius * Math.sin(hand.angle);
+    deltax = handx - number.centerx;
+    deltay = handy - number.centery;
+    f = hand.mass / (deltax*deltax + deltay*deltay);
+    number.posx = number.centerx + f * deltax;
+    number.posy = number.centery + f * deltay;
+
+    hand = hands[1];
+    handx = 0.5 * hand.radius * Math.cos(hand.angle);
+    handy = 0.5 * hand.radius * Math.sin(hand.angle);
+    deltax = handx - number.centerx;
+    deltay = handy - number.centery;
+    f = hand.mass / (deltax*deltax + deltay*deltay);
+    number.posx += f * deltax;
+    number.posy += f * deltay;
+
+    hand = hands[2];
+    handx = 0.5 * hand.radius * Math.cos(hand.angle);
+    handy = 0.5 * hand.radius * Math.sin(hand.angle);
+    deltax = handx - number.centerx;
+    deltay = handy - number.centery;
+    f = hand.mass / (deltax*deltax + deltay*deltay);
+    number.posx += f * deltax;
+    number.posy += f * deltay;
+}
+
+function drawNumber(number) {
+    context.fillStyle = "black";
+    context.font = "" + Math.round(size/10) + "px Arial";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(number.text,
+                     canvas.width/2 + 1.35 * size * number.posx,
+                     canvas.height/2 - 1.35 * size * number.posy);
+}
+
 function update() {
     canvas.width = document.documentElement.clientWidth;
     canvas.height = document.documentElement.clientHeight;
@@ -44,6 +88,10 @@ function update() {
     for (i = 0; i < hands.length; i++) {
         updateHand(hands[i]);
         drawHand(hands[i]);
+    }
+    for (i = 0; i < numbers.length; i++) {
+        updateNumber(numbers[i]);
+        drawNumber(numbers[i]);
     }
 }
 
@@ -66,6 +114,16 @@ window.onload = function() {
 
     for (i = 0; i < hands.length; i++) {
         hands[i].velocity = 0;
+    }
+
+    numbers = new Array(12);
+    for (i = 0; i < numbers.length; i++) {
+        numbers[i] = {};
+        numbers[i].text = (i == 0 ? "12" : ""+i);
+        angle = 2 * Math.PI * i / numbers.length;
+        angle = 0.5 * Math.PI - angle;
+        numbers[i].centerx = Math.cos(angle);
+        numbers[i].centery = Math.sin(angle);
     }
 
     let now = new Date();
